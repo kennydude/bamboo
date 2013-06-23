@@ -19,6 +19,6 @@ public class GuiTatamiCutterHandler implements IGuiHandler {
     @Override
     public Object getClientGuiElement(int id, EntityPlayer player, World world,
                                       int x, int y, int z) {
-        return new GuiTatamiCutter();
+        return new GuiTatamiCutter(x,y,z, world);
     }
 }

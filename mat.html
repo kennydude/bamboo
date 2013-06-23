@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+    <head>
+        <style>
+        	table, tr, td, th, tbody, thead{vertical-align:baseline;border-spacing: 0}
+			*{ margin: 0; padding: 0; }
+			img, canvas{ display: block; }
+		</style>
+    </head>
+    <body>
+        <table>
+			<tr>
+				<td>
+					<img src="res/textures/blocks/matLT.png" />
+				</td>
+				<td>
+					<img src="res/textures/blocks/matT.png" />
+				</td>
+				<td>
+					<img src="res/textures/blocks/matT.png" />
+				</td>
+				<td>
+					<img src="res/textures/blocks/matT.png" />
+				</td>
+				<td>
+					<img src="res/textures/blocks/matRT.png" />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<img src="res/textures/blocks/matL.png" />
+				</td>
+				<td>
+					<img src="res/textures/blocks/matA.png" />
+				</td>
+				<td>
+					<img src="res/textures/blocks/matA.png" />
+				</td>
+				<td>
+					<img src="res/textures/blocks/matA.png" />
+				</td>
+				<td>
+					<img src="res/textures/blocks/matR.png" />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<img src="res/textures/blocks/matLB.png" />
+				</td>
+				<td>
+					<img src="res/textures/blocks/matB.png" />
+				</td>
+				<td>
+					<img src="res/textures/blocks/matB.png" />
+				</td>
+				<td>
+					<img src="res/textures/blocks/matB.png" />
+				</td>
+				<td>
+					<img src="res/textures/blocks/matRB.png" />
+				</td>
+			</tr>
+		</table>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script type="text/javascript">
+			var size = 16 * 4;
+			var zoom = 4;
+
+			$("img").each(function(){
+				var ctx2 = $("<canvas>").attr({
+					"width" : size + "px",
+					"height" : size + "px"
+				}).insertAfter(this).get(0).getContext('2d');
+				var img = this;
+
+				var offtx = document.createElement('canvas').getContext('2d');
+				offtx.drawImage(img,0,0);
+				var imgData = offtx.getImageData(0,0,img.width,img.height).data;
+
+				ctx2.clearRect(0,0,img.width,img.height);
+				for (var x=0;x<img.width;++x){
+					for (var y=0;y<img.height;++y){
+						var i = (y*img.width + x)*4;
+						var r = imgData[i  ];
+						var g = imgData[i+1];
+						var b = imgData[i+2];
+						var a = imgData[i+3];
+						ctx2.fillStyle = "rgba("+r+","+g+","+b+","+(a/255)+")";
+						ctx2.fillRect(x*zoom,y*zoom,zoom,zoom);
+					}
+				}
+			}).hide();
+		</script>
+    </body>
+</html>
