@@ -1,10 +1,12 @@
 package me.kennydude.minecraft.bamboo.gui;
 
 import me.kennydude.minecraft.bamboo.Constants;
+import me.kennydude.minecraft.bamboo.PacketHandler;
 import me.kennydude.minecraft.bamboo.blocks.TatamiMat;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSmallButton;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.StringTranslate;
 import net.minecraft.world.World;
 
@@ -30,6 +32,11 @@ public class GuiTatamiCutter extends GuiScreen {
     }
 
     @Override
+    public boolean doesGuiPauseGame(){
+        return false;
+    }
+
+    @Override
     public void initGui() {
         int height = 20;
         int width = 40;
@@ -40,7 +47,8 @@ public class GuiTatamiCutter extends GuiScreen {
         bbottom = new GuiButton(1, centerW, centerH + 60, width, height, "N");
         btop = new GuiButton(2, centerW, centerH - 60, width, height, "N");
         bright = new GuiButton(3, centerW + 60, centerH, width, height, "N");
-        bok = new GuiButton(4, centerW, centerH + 80, width, height, "OK");
+
+        bok = new GuiButton(4, centerW, centerH, width, height, "OK");
 
         buttonList.add(bleft);
         buttonList.add(bright);
@@ -49,28 +57,49 @@ public class GuiTatamiCutter extends GuiScreen {
         buttonList.add(bok);
 
         // Set values from existing metadata
-        int cMeta = world.getBlockMetadata(x,y,z);
-        System.out.println("GuiTatamiCutter: Existing Metadata: " + cMeta );
+        int cMeta = this.mc.theWorld.getBlockMetadata(x,y,z);
+        System.out.println("GuiTatamiCutter: Existing Metadata: " + cMeta + "@" + x + "," + y + "," + z );
+
+        int direction = MathHelper.floor_double((double) ((this.mc.thePlayer.rotationYaw * 4F) / 360F) + 0.5D) & 3;
+        System.out.println("GuiTatamiCutter: Player direction: " + direction);
+
+        boolean setEast = false, setNorth = false, setSouth = false, setWest = false;
         if(cMeta == TatamiMat.META_LEFT){
-            setLeft = true;
+            setWest = true;
         } else if(cMeta == TatamiMat.META_LEFT_TOP){
-            setLeft = true;
-            setTop = true;
+            setWest = true;
+            setNorth = true;
         } else if(cMeta == TatamiMat.META_LEFT_BOTTOM){
-            setLeft = true;
-            setBottom = true;
+            setWest = true;
+            setSouth = true;
         } else if(cMeta == TatamiMat.META_TOP){
-            setTop = true;
+            setNorth = true;
         } else if(cMeta == TatamiMat.META_BOTTOM){
-            setBottom = true;
+            setSouth = true;
         } else if(cMeta == TatamiMat.META_RIGHT){
-            setRight = true;
+            setEast = true;
         } else if(cMeta == TatamiMat.META_RIGHT_TOP){
-            setRight = true;
-            setTop = true;
+            setEast = true;
+            setNorth = true;
         }  else if(cMeta == TatamiMat.META_RIGHT_BOTTOM){
-            setRight = true;
-            setBottom = true;
+            setEast = true;
+            setSouth = true;
+        }
+
+        // Now set them to the right place. We do this because
+        // otherwise the GUI looks confusing
+        if(direction == Constants.DIRECTION_NORTH){
+            setTop = setNorth; setRight = setEast;
+            setBottom = setSouth; setLeft = setWest;
+        } else if(direction == Constants.DIRECTION_EAST){
+            setTop = setEast; setRight = setSouth;
+            setBottom = setWest; setLeft = setNorth;
+        } else if(direction == Constants.DIRECTION_SOUTH){
+            setTop = setSouth; setRight = setWest;
+            setBottom = setNorth; setLeft = setEast;
+        } else if(direction == Constants.DIRECTION_WEST){
+            setTop = setWest; setRight = setNorth;
+            setBottom = setEast; setLeft = setSouth;
         }
 
         calc();
@@ -110,29 +139,52 @@ public class GuiTatamiCutter extends GuiScreen {
             case 4:
                 // Save metadata
                 int newMeta = 0;
-                if(setLeft && setTop){
+
+                int direction = MathHelper.floor_double((double) ((this.mc.thePlayer.rotationYaw * 4F) / 360F) + 0.5D) & 3;
+                System.out.println("GuiTatamiCutter: Player direction E: " + direction);
+
+                boolean setNorth = false, setEast = false, setSouth = false, setWest = false;
+
+                // Now set them to the right place. We do this because
+                // otherwise the GUI looks confusing
+                if(direction == Constants.DIRECTION_NORTH){
+                    setNorth = setTop; setEast = setRight;
+                    setSouth = setBottom; setWest = setLeft;
+                } else if(direction == Constants.DIRECTION_EAST){
+                    setNorth = setLeft; setEast = setTop;
+                    setSouth = setRight; setWest = setBottom;
+                } else if(direction == Constants.DIRECTION_SOUTH){
+                    setNorth = setBottom; setEast = setLeft;
+                    setSouth = setTop; setWest = setRight;
+                } else if(direction == Constants.DIRECTION_WEST){
+                    setNorth = setRight; setEast = setTop;
+                    setSouth = setLeft; setWest = setBottom;
+                }
+
+                if(setWest && setNorth){
                     newMeta = TatamiMat.META_LEFT_TOP;
-                } else if(setLeft && setBottom){
+                } else if(setWest && setSouth){
                     newMeta = TatamiMat.META_LEFT_BOTTOM;
-                } else if(setLeft){
+                } else if(setWest){
                     newMeta = TatamiMat.META_LEFT;
-                } else if(setRight && setTop){
+                } else if(setEast && setNorth){
                     newMeta = TatamiMat.META_RIGHT_TOP;
-                } else if(setRight && setBottom){
+                } else if(setEast && setSouth){
                     newMeta = TatamiMat.META_RIGHT_BOTTOM;
-                } else if(setRight){
+                } else if(setEast){
                     newMeta = TatamiMat.META_RIGHT;
-                } else if(setTop){
+                } else if(setNorth){
                     newMeta = TatamiMat.META_TOP;
-                } else if(setBottom){
+                } else if(setSouth){
                     newMeta = TatamiMat.META_BOTTOM;
                 }
-                System.out.println("GuiTatamiCutter: " + newMeta);
-                world.setBlockMetadataWithNotify(x,y,z, newMeta, Constants.SEND_BLOCK_CHANGE );
-                world.markBlockForRenderUpdate(x,y,z);
+                System.out.println("GuiTatamiCutter: " + newMeta + "@" + x + "," + y + "," + z );
+               // BAD!!!! this.mc.theWorld.setBlockMetadataWithNotify(x,y,z, newMeta, 3 );
+                this.mc.thePlayer.sendQueue.addToSendQueue(PacketHandler.getSetMetadataPacket(x,y,z,newMeta) );
 
                 this.mc.displayGuiScreen((GuiScreen)null);
                 this.mc.setIngameFocus();
+
                 break;
         }
         calc();

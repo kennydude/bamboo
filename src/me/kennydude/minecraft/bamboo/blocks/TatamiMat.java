@@ -2,10 +2,15 @@ package me.kennydude.minecraft.bamboo.blocks;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import me.kennydude.minecraft.bamboo.BambooMod;
 import me.kennydude.minecraft.bamboo.Constants;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 
@@ -31,18 +36,19 @@ public class TatamiMat extends Block {
     public static final int META_RIGHT_TOP = 7;
     public static final int META_RIGHT_BOTTOM = 8;
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void registerIcons(IconRegister iconRegister) {
         iconArray = new Icon[]{
-            iconRegister.registerIcon("bamboo:matA"),
-            iconRegister.registerIcon("bamboo:matT"),
-            iconRegister.registerIcon("bamboo:matB"),
-            iconRegister.registerIcon("bamboo:matL"),
-            iconRegister.registerIcon("bamboo:matLT"),
-            iconRegister.registerIcon("bamboo:matLB"),
-            iconRegister.registerIcon("bamboo:matR"),
-            iconRegister.registerIcon("bamboo:matRT"),
-            iconRegister.registerIcon("bamboo:matRB")
+                iconRegister.registerIcon("bamboo:matA"),
+                iconRegister.registerIcon("bamboo:matT"),
+                iconRegister.registerIcon("bamboo:matB"),
+                iconRegister.registerIcon("bamboo:matL"),
+                iconRegister.registerIcon("bamboo:matLT"),
+                iconRegister.registerIcon("bamboo:matLB"),
+                iconRegister.registerIcon("bamboo:matR"),
+                iconRegister.registerIcon("bamboo:matRT"),
+                iconRegister.registerIcon("bamboo:matRB")
         };
         this.blockIcon = iconRegister.registerIcon("bamboo:matA");
     }
@@ -58,7 +64,7 @@ public class TatamiMat extends Block {
     @Override
     public void onBlockAdded(World world, int x, int y, int z) {
         System.out.println("TatamiMat: onBlockAdded");
-        world.setBlockMetadataWithNotify(x, y, z, 0, Constants.SEND_BLOCK_CHANGE);
+        //world.setBlockMetadataWithNotify(x, y, z, 0, Constants.SEND_BLOCK_CHANGE);
     }
 
     /*
@@ -89,7 +95,9 @@ public class TatamiMat extends Block {
     /**
      * From the specified side and block metadata retrieves the blocks texture. Args: side, metadata
      */
+    @SideOnly(Side.CLIENT)
     public Icon getIcon(int side, int metadata) {
+        // System.out.println("TatamiMat getIcon: " + metadata);
         return iconArray[metadata];
     }
 }

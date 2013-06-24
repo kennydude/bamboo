@@ -28,7 +28,12 @@ import net.minecraft.item.ItemStack;
  * Created by kennydude on 21/06/13.
  */
 @Mod(modid="Bamboo", name="Bamboo", version="1.0.0")
-@NetworkMod(clientSideRequired=true, serverSideRequired=true, channels={"BambooTTP"}, packetHandler = PacketHandler.class)
+@NetworkMod(
+        clientSideRequired=true,
+        serverSideRequired=true,
+        channels={Constants.PACKET_CHANNEL},
+        packetHandler=PacketHandler.class
+)
 public class BambooMod {
 
     @Instance("Bamboo")

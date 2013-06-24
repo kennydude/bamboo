@@ -1,5 +1,7 @@
 package me.kennydude.minecraft.bamboo.tools;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import me.kennydude.minecraft.bamboo.BambooMod;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,13 +23,18 @@ public class TatamiCutter extends Item {
     }
 
     @Override
-    public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer player, World world, int par4, int par5, int par6, int par7, float par8, float par9, float par10) {
-        int blockId = world.getBlockId(par4, par5, par6);
-        System.out.println("onItemUse by a Tatami Mat Cutter: " + blockId);
+    public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer player, World world, int x, int y, int z, int par7, float par8, float par9, float par10) {
+        if(!world.isRemote) return true;
+
+        int blockId = world.getBlockId(x, y, z);
+        int meta = world.getBlockMetadata(x,y,z);
+
         if(blockId == BambooMod.tatamiMat.blockID){
-            player.openGui(BambooMod.instance, 0, world, par4, par5, par6);
+            System.out.println("onItemUse by a Tatami Mat Cutter: m"+meta+"@" + x + "," + y + "," + z );
+            player.openGui(BambooMod.instance, 0, world, x, y, z);
             return true;
         }
         return false;
     }
+
 }
